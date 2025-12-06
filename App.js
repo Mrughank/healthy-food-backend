@@ -22,7 +22,6 @@ app.use('/order', orderroutes);
 app.use('/contact',contactroutes)
 
 
-// ⭐ Start Server
-app.listen(process.env.PORT, () => {
-  console.log("Server running at PORT:", process.env.PORT);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
