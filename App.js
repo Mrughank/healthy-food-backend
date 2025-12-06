@@ -22,6 +22,9 @@ app.use('/order', orderroutes);
 app.use('/contact',contactroutes)
 
 
+const PORT = process.env.PORT;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+

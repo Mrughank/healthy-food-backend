@@ -1,14 +1,11 @@
 {
-  "name": "apiirepeatpratice",
+  "name": "healthyfoodapi",
   "version": "1.0.0",
   "main": "App.js",
   "scripts": {
     "start": "node App.js",
     "dev": "nodemon App.js"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
