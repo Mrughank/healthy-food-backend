@@ -1,5 +1,5 @@
-const Cart = require("../model/cartModel");
-const Food = require("../model/foodModel");
+const Cart = require('../Model/cartmodel');
+const Food = require("../Model/foodmodel");
 const { v4: uuidv4 } = require("uuid");
 
 // --------------------- GET CART ---------------------
