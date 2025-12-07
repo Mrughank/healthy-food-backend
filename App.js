@@ -5,26 +5,26 @@ require("./dbconnected");
 
 const app = express();
 
-// ⭐ Middleware
+// Middleware
 app.use(express.json());
 app.use(cors());
 
+// Routes
 const userroutes = require('./Routes/userRoutes');
 const sellerroutes = require('./Routes/sellerroutes');
 const cartroutes = require('./Routes/cartroutes');
 const orderroutes = require('./Routes/orderroutes');
-const contactroutes= require("./Routes/contactroutes");
+const contactroutes = require("./Routes/contactroutes");
 
 app.use('/user', userroutes);
 app.use('/seller', sellerroutes);
 app.use('/cart', cartroutes);
 app.use('/order', orderroutes);
-app.use('/contact',contactroutes)
+app.use('/contact', contactroutes);
 
-
+// ✅ Railway Safe Port
 const PORT = process.env.PORT || 9000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
-
