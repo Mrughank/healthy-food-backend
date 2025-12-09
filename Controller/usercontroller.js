@@ -2,88 +2,113 @@ const User = require("../Model/usermodel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-// SECRET KEY
 const SECRET_KEY = process.env.JWT_SECRET || "MY_SECRET_KEY_12345";
 
 /* ============================
-          SIGNUP
+          SIGNUP ✅
 =============================== */
-const signup = (req, res) => {
-  const { name, password, email, phone } = req.body;
+const signup = async (req, res) => {
+  try {
+    const { name, password, email, phone } = req.body;
 
-  // Validate fields
-  if (!name || !password || !email || !phone) {
-    return res.status(400).send({ success: false, msg: "All fields required" });
-  }
-
-  // Hash password
-  const hashedPassword = bcrypt.hashSync(password, 10);
-
-  // Save user
-  User.create({
-    name: name,
-    password: hashedPassword,
-    email: email,
-    phone: phone,
-  })
-    .then((user) => {
-      res.send({
-        success: true,
-        msg: "User registered successfully",
-        user,
+    // ✅ Validation
+    if (!name || !password || !email || !phone) {
+      return res.status(400).json({
+        success: false,
+        msg: "All fields are required",
       });
-    })
-    .catch((err) => {
-      res.status(500).send({ success: false, msg: err.message });
+    }
+
+    // ✅ Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        msg: "User already registered",
+      });
+    }
+
+    // ✅ Hash password
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    // ✅ Save user
+    const user = await User.create({
+      name,
+      password: hashedPassword,
+      email,
+      phone,
     });
+
+    res.status(201).json({
+      success: true,
+      msg: "User registered successfully",
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      msg: err.message,
+    });
+  }
 };
 
 /* ============================
-           LOGIN
+           LOGIN ✅
 =============================== */
-const login = (req, res) => {
-  const { username, userpassword } = req.body;
+const login = async (req, res) => {
+  try {
+    const { username, userpassword } = req.body;
 
-  if (!username || !userpassword) {
-    return res
-      .status(400)
-      .send({ msg: "Username and password required" });
-  }
-
-  // Check if user exists
-  User.findOne({ name: username })
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ msg: "User not found" });
-      }
-
-      // Check password
-      const isMatch = bcrypt.compareSync(userpassword, user.password);
-
-      if (!isMatch) {
-        return res.status(401).send({ msg: "Incorrect password" });
-      }
-
-      // Create token payload
-      const payload = {
-        id: user._id,
-        username: user.name,
-        email: user.email,
-      };
-
-      // Generate token
-      const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "4h" });
-
-      res.status(200).send({
-        success: true,
-        msg: "Login successful",
-        token,
-        user: payload,
+    if (!username || !userpassword) {
+      return res.status(400).json({
+        success: false,
+        msg: "Username and password required",
       });
-    })
-    .catch((err) => {
-      res.status(500).send({ msg: "Server error", error: err.message });
+    }
+
+    // ✅ Find user
+    const user = await User.findOne({ name: username });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        msg: "User not found",
+      });
+    }
+
+    // ✅ Compare password
+    const isMatch = bcrypt.compareSync(userpassword, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        msg: "Incorrect password",
+      });
+    }
+
+    // ✅ Create payload
+    const payload = {
+      id: user._id,
+      username: user.name,
+      email: user.email,
+    };
+
+    // ✅ Generate token
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "4h" });
+
+    res.status(200).json({
+      success: true,
+      msg: "Login successful",
+      token,
+      user: payload,
     });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      msg: "Server error",
+      error: err.message,
+    });
+  }
 };
 
 module.exports = { signup, login };
