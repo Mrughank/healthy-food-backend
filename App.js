@@ -5,24 +5,27 @@ require("./dbconnected");
 
 const app = express();
 
-// Middleware
+// ✅ Middleware (ORDER MATTERS)
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 app.use(express.json());
-app.use(cors());
 
-// Routes
-const userroutes = require('./Routes/userRoutes');
-const sellerroutes = require('./Routes/sellerroutes');
-const cartroutes = require('./Routes/cartroutes');
-const orderroutes = require('./Routes/orderroutes');
-const contactroutes = require("./Routes/contactroutes");
+// ✅ Routes
+app.use("/user", require("./Routes/userRoutes"));
+app.use("/seller", require("./Routes/sellerroutes"));
+app.use("/cart", require("./Routes/cartroutes"));
+app.use("/order", require("./Routes/orderroutes"));
+app.use("/contact", require("./Routes/contactroutes"));
 
-app.use('/user', userroutes);
-app.use('/seller', sellerroutes);
-app.use('/cart', cartroutes);
-app.use('/order', orderroutes);
-app.use('/contact', contactroutes);
+// ✅ Test Route (VERY IMPORTANT FOR DEBUG)
+app.get("/", (req, res) => {
+  res.send("✅ Backend is running successfully");
+});
 
-// ✅ Railway Safe Port
+// ✅ Port (Render / Railway Safe)
 const PORT = process.env.PORT || 9000;
 
 app.listen(PORT, () => {

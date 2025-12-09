@@ -11,7 +11,6 @@ const signup = async (req, res) => {
   try {
     const { name, password, email, phone } = req.body;
 
-    // ✅ Validation
     if (!name || !password || !email || !phone) {
       return res.status(400).json({
         success: false,
@@ -19,7 +18,6 @@ const signup = async (req, res) => {
       });
     }
 
-    // ✅ Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -28,10 +26,8 @@ const signup = async (req, res) => {
       });
     }
 
-    // ✅ Hash password
     const hashedPassword = bcrypt.hashSync(password, 10);
 
-    // ✅ Save user
     const user = await User.create({
       name,
       password: hashedPassword,
@@ -66,7 +62,6 @@ const login = async (req, res) => {
       });
     }
 
-    // ✅ Find user
     const user = await User.findOne({ name: username });
 
     if (!user) {
@@ -76,7 +71,6 @@ const login = async (req, res) => {
       });
     }
 
-    // ✅ Compare password
     const isMatch = bcrypt.compareSync(userpassword, user.password);
 
     if (!isMatch) {
@@ -86,14 +80,12 @@ const login = async (req, res) => {
       });
     }
 
-    // ✅ Create payload
     const payload = {
       id: user._id,
       username: user.name,
       email: user.email,
     };
 
-    // ✅ Generate token
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "4h" });
 
     res.status(200).json({
