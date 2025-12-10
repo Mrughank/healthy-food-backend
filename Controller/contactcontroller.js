@@ -1,32 +1,31 @@
 const Contact = require("../Model/contactmodel");
 
-// SAVE MESSAGE
-const sendMessage = (req, res) => {
-  const { name, email, message } = req.body;
+// ✅ USER SEND MESSAGE
+const sendMessage = async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
 
-  if (!name || !email || !message) {
-    return res.status(400).send({ success: false, msg: "All fields required" });
+    const newMsg = await Contact.create({
+      name,
+      email,
+      message,
+      date: new Date(),
+    });
+
+    res.send({ success: true, message: newMsg });
+  } catch (err) {
+    res.status(500).send({ success: false, msg: err.message });
   }
-
-  Contact.create({ name, email, message })
-    .then(() => {
-      res.send({ success: true, msg: "Message sent successfully!" });
-    })
-    .catch((err) => {
-      res.status(500).send({ success: false, msg: err.message });
-    });
 };
 
-// GET ALL MESSAGES
-const getMessages = (req, res) => {
-  Contact.find()
-    .sort({ date: -1 })
-    .then((messages) => {
-      res.send({ success: true, messages });
-    })
-    .catch((err) => {
-      res.status(500).send({ success: false, msg: err.message });
-    });
+// ✅ SELLER GET ALL MESSAGES
+const getAllMessages = async (req, res) => {
+  try {
+    const messages = await Contact.find().sort({ date: -1 });
+    res.send({ success: true, messages });
+  } catch (err) {
+    res.status(500).send({ success: false, msg: err.message });
+  }
 };
 
-module.exports = { sendMessage, getMessages };
+module.exports = { sendMessage, getAllMessages };
