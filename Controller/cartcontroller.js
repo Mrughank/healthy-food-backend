@@ -1,36 +1,36 @@
-const Cart = require('../Model/cartmodel');
+const Cart = require("../Model/cartmodel");
 const Food = require("../Model/foodmodel");
 const { v4: uuidv4 } = require("uuid");
 
 // --------------------- GET CART ---------------------
-function getCart(req, res) {
+const getCart = (req, res) => {
   const userId = req.user.id;
 
   Cart.findOne({ userId })
     .populate("items.foodId")
-    .then(cart => {
+    .then((cart) => {
       if (!cart) {
         return res.send({ success: true, cart: { items: [] } });
       }
       res.send({ success: true, cart });
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({ success: false, msg: err.message });
     });
-}
+};
 
 // --------------------- ADD TO CART ---------------------
-function addToCart(req, res) {
+const addToCart = (req, res) => {
   const userId = req.user.id;
-  const { foodId, qty } = req.body;
+  const { foodId, qty = 1 } = req.body;
 
   Food.findById(foodId)
-    .then(food => {
+    .then((food) => {
       if (!food) {
         return res.status(404).send({ msg: "Food not found" });
       }
 
-      Cart.findOne({ userId }).then(cart => {
+      Cart.findOne({ userId }).then((cart) => {
         if (!cart) {
           cart = new Cart({ userId, items: [] });
         }
@@ -39,36 +39,37 @@ function addToCart(req, res) {
           itemId: uuidv4(),
           foodId: foodId,
           sellerId: food.sellerId,
-          qty: qty
+          qty: qty,
         });
 
-        cart.save()
+        cart
+          .save()
           .then(() => {
             return Cart.findOne({ userId }).populate("items.foodId");
           })
-          .then(updatedCart => {
+          .then((updatedCart) => {
             res.send({ success: true, cart: updatedCart });
           });
-
       });
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({ success: false, msg: err.message });
     });
-}
+};
 
 // --------------------- UPDATE QTY ---------------------
-function updateQty(req, res) {
+const updateQty = (req, res) => {
   const userId = req.user.id;
-  const { itemId, type } = req.body;
+  const { type } = req.body;
+  const { itemId } = req.params;
 
   Cart.findOne({ userId })
-    .then(cart => {
+    .then((cart) => {
       if (!cart) {
         return res.status(404).send({ msg: "Cart not found" });
       }
 
-      const item = cart.items.find(i => i.itemId === itemId);
+      const item = cart.items.find((i) => i.itemId === itemId);
 
       if (!item) {
         return res.status(404).send({ msg: "Item not found" });
@@ -80,56 +81,59 @@ function updateQty(req, res) {
       cart.save().then(() => {
         Cart.findOne({ userId })
           .populate("items.foodId")
-          .then(updated => {
+          .then((updated) => {
             res.send({ success: true, cart: updated });
           });
       });
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({ success: false, msg: err.message });
     });
-}
+};
 
 // --------------------- REMOVE ITEM ---------------------
-function removeItem(req, res) {
+const removeItem = (req, res) => {
   const userId = req.user.id;
   const itemId = req.params.itemId;
 
   Cart.findOne({ userId })
-    .then(cart => {
-      if (!cart) return res.send({ success: true, cart: { items: [] } });
+    .then((cart) => {
+      if (!cart)
+        return res.send({ success: true, cart: { items: [] } });
 
-      cart.items = cart.items.filter(i => i.itemId !== itemId);
+      cart.items = cart.items.filter((i) => i.itemId !== itemId);
 
       cart.save().then(() => {
         Cart.findOne({ userId })
           .populate("items.foodId")
-          .then(updated => {
+          .then((updated) => {
             res.send({ success: true, cart: updated });
           });
       });
     })
-    .catch(err => res.status(500).send({ success: false, msg: err.message }));
-}
+    .catch((err) =>
+      res.status(500).send({ success: false, msg: err.message })
+    );
+};
 
 // --------------------- CLEAR CART ---------------------
-function clearCart(req, res) {
+const clearCart = (req, res) => {
   const userId = req.user.id;
 
-  Cart.findOneAndUpdate({ userId }, { items: [] })
+  Cart.findOneAndUpdate({ userId }, { items: [] }, { new: true })
     .then(() => {
       res.send({ success: true, cart: { items: [] } });
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({ success: false, msg: err.message });
     });
-}
+};
 
-// EXPORT ALL FUNCTIONS
+// --------------------- EXPORT ---------------------
 module.exports = {
   getCart,
   addToCart,
   updateQty,
   removeItem,
-  clearCart
+  clearCart,
 };
