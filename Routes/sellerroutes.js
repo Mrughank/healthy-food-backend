@@ -10,7 +10,8 @@ const {
   updateFood,
   deleteFood,
   getSellerOrders,
-} = require("../Controller/sellercontroller");
+} = require("../Controller/sellercontroller")
+
 
 router.post("/register", register);
 router.post("/login", login);
