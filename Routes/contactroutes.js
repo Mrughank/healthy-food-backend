@@ -8,4 +8,7 @@ router.post("/send", sendMessage);
 // SELLER GET ALL MESSAGES ✅ THIS FIXES 404
 router.get("/all", getAllMessages);
 
+router.delete("/delete/:id", deleteMessage);
+
+
 module.exports = router;

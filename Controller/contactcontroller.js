@@ -28,4 +28,16 @@ const getAllMessages = async (req, res) => {
   }
 };
 
-module.exports = { sendMessage, getAllMessages };
+const deleteMessage = async (req, res) => {
+  try {
+    await Contact.findByIdAndDelete(req.params.id);
+    res.send({ success: true });
+  } catch (err) {
+    res.status(500).send({ success: false });
+  }
+};
+
+module.exports = { sendMessage, getAllMessages, deleteMessage };
+
+
+module.exports = { sendMessage, getAllMessages,deleteMessage };
