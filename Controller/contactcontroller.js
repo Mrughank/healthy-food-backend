@@ -37,7 +37,6 @@ const deleteMessage = async (req, res) => {
   }
 };
 
+
+
 module.exports = { sendMessage, getAllMessages, deleteMessage };
-
-
-module.exports = { sendMessage, getAllMessages,deleteMessage };

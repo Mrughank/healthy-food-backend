@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { getAllMessages, sendMessage } = require("../Controller/contactcontroller");
 
-// USER SEND MESSAGE
-router.post("/send", sendMessage);
+const {
+  addMessage,
+  getAllMessages,
+  deleteMessage
+} = require("../Controller/contactcontroller");
 
-// SELLER GET ALL MESSAGES ✅ THIS FIXES 404
+router.post("/add", addMessage);
 router.get("/all", getAllMessages);
-
 router.delete("/delete/:id", deleteMessage);
-
 
 module.exports = router;
