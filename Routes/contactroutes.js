@@ -5,7 +5,7 @@ const {
   sendMessage,
   getAllMessages,
   deleteMessage
-} = require("../Controller/contactcontroller");
+} = require("../Controller/contactcontroller"); 
 
 // ✅ USER SEND MESSAGE
 router.post("/add", sendMessage);
